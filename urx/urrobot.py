@@ -134,12 +134,44 @@ class URRobot(object):
     def set_digital_out(self, output, val):
         """
         set digital output. val is a bool
+        DEPRECATED. set_standard_digital_out and set_tool_digital_out
+        should be used instead.
         """
         if val in (True, 1):
             val = "True"
         else:
             val = "False"
         self.send_program('digital_out[%s]=%s' % (output, val))
+
+    def set_standard_digital_out(self, output, signal):
+        """
+        set digital output on controller GPIO
+
+        Keyword arguments:
+        output - output ID (0-7)
+        signal - signal level (boolean)
+        """
+        if signal in (True, 1):
+            signal = "True"
+        else:
+            signal = "False"
+        if output in range(0,8):
+            self.send_program('set_standard_digital_out(%s, %s)' % (output, signal))
+
+    def set_tool_digital_out(self, output, signal):
+        """
+        set digital output on tool GPIO
+
+        Keyword arguments:
+        output - output ID (0-1)
+        signal - signal level (boolean)
+        """
+        if signal in (True, 1):
+            signal = "True"
+        else:
+            signal = "False"
+        if output in (0, 1):
+            self.send_program('set_tool_digital_out(%s, %s)' % (output, signal))
 
     def get_analog_inputs(self):
         """
@@ -229,8 +261,8 @@ class URRobot(object):
             dist += (target[i] - pose[i]) ** 2
         for i in range(3, 6):
             dist += ((target[i] - pose[i]) / 5) ** 2 # arbitraty length like
-        return dist ** 0.5 
-    
+        return dist ** 0.5
+
     def _get_joints_dist(self, target):
         joints = self.getj(wait=True)
         dist = 0
